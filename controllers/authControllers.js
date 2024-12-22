@@ -68,7 +68,7 @@ const signinpost = async (req, res) => {
                 html: `
                 <div style="font-family: Arial, sans-serif; text-align: center;">
                     <p>Is it you?</p>
-                    <a href="https://jaksos.jejaki.id/api/verify-email?token=${verificationToken}" 
+                    <a href="${process.env.baseUrl}/api/verify-email?token=${verificationToken}" 
                         style="display: inline-block; padding: 12px 24px; margin-top: 10px; font-size: 16px; color: #ffffff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">
                         Verify Your Account
                     </a>
@@ -88,7 +88,7 @@ const signinpost = async (req, res) => {
         }
         const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.cookie("token", token); // Simpan token di cookie
-        res.redirect("/threads");
+        res.redirect("/dashboard");
     } catch (err) {
         console.log(err);
 
@@ -103,7 +103,7 @@ const logout = async (req, res) => {
     try {
         const token = req.cookies.token;
         res.clearCookie("token");
-        res.redirect("/threads");
+        res.redirect("/dashboard");
     } catch (err) {
         console.log(err);
 
@@ -194,4 +194,4 @@ const verified_mail = async (req, res) => {
     }
 };
 
-module.exports = {  verified_mail, login, isLogin, signin, signinpost, signup, signuppost, logout };
+module.exports = { verified_mail, login, isLogin, signin, signinpost, signup, signuppost, logout };
