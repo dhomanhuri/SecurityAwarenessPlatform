@@ -159,7 +159,7 @@
                     $(".loading-spinner").show(); // Tampilkan animasi loading
                     $(".data_display table").remove(); // Hapus tabel lama (jika ada)
                     $.ajax({
-                        url: `/api/group_data`,
+                        url: `/api/group_data/<%= data?.company_id %>`,
                         method: 'GET',
                         success: function (data) {
                             console.log(data)

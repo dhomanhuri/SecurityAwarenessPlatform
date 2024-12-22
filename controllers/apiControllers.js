@@ -62,6 +62,13 @@ const group_data = async (req, res) => {
         data: group,
     });
 };
+const group_data_company = async (req, res) => {
+    const group = await model.GroupData.findAll({ where: { group_id: req.params.id } });
+    return res.json({
+        status: true,
+        data: group,
+    });
+};
 const group_data_store = async (req, res) => {
     try {
         const group = await model.GroupData.create(req.body);
@@ -140,4 +147,5 @@ module.exports = {
     group_data_store,
     group_data_update,
     group_data_destroy,
+    group_data_company,
 };

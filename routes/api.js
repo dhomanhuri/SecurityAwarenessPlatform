@@ -11,6 +11,7 @@ router.post("/group", apiControllers.group_store);
 router.put("/group/:id", apiControllers.group_update);
 router.delete("/group/:id", apiControllers.group_destroy);
 router.get("/group_data", apiControllers.group_data);
+router.get("/group_data/:id", apiControllers.group_data_company);
 router.post("/group_data", apiControllers.group_data_store);
 router.put("/group_data/:id", apiControllers.group_data_update);
 router.delete("/group_data/:id", apiControllers.group_data_destroy);
