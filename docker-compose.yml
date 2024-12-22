@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+    api:
+        container_name: be_sat
+        build:
+            context: ./
+            target: apisat
+        ports:
+            - 3312:3312
+        restart: always

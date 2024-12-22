@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            background-color: #1c1c1c;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .sidebar .nav-link {
+            color: #ccc;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #007bff;
+        }
+
+        .content-area {
+            padding-left: 1.5rem;
+        }
+
+        .content-area .post-card {
+            background-color: #1c1c1c;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+        <div class="container mt-5">
+            <div class="row">
+                <!-- Sidebar -->
+                <%- include('partials/sidebar')%>
+
+                    <!-- Main Content -->
+                    <div class="col-md-9 content-area">
+                        <!-- Contoh postingan -->
+                        <div class="post-card">
+                            <h4>Welcome to Jejaki SAT Demo!</h4>
+                            <p>This is an example of a post in the main content area.</p>
+
+                            <form id="phishingForm" class="p-4 rounded bg-dark text-white" style=" margin: 0 auto;">
+                                <div class="mb-3">
+                                    <label for="targetDropdown" class="form-label">Target Company</label>
+                                    <div id="loading-indicator" class="text-center my-2" style="display: none;">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <select class="form-select" id="targetDropdown" name="targetDropdown" required>
+                                        <option selected disabled>Loading targets...</option>
+                                    </select>
+                                </div>
+                                <div class="form-floating mb-4">
+                                    <textarea class="form-control" placeholder="Leave a comment here"
+                                        id="floatingTextarea" name="content"></textarea>
+                                    <label for="floatingTextarea">Content</label>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="processingModal" tabindex="-1" aria-labelledby="processingModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-dark" id="processingModalLabel">Processing</h5>
+                    </div>
+                    <div class="modal-body text-center">
+
+                        <p class="mt-3 text-dark">Your request is processed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            function getData() {
+                // Show the loading indicator
+                $('#loading-indicator').show();
+
+                // Clear existing options
+                const targetDropdown = $('#targetDropdown');
+                targetDropdown.empty();
+
+                $.ajax({
+                    url: `/api/group`,
+                    method: 'GET',
+                    success: (data_raw) => {
+                        const data = data_raw.data
+                        // Hide the loading indicator
+                        $('#loading-indicator').hide();
+
+                        // Populate dropdown with data
+                        if (data.length > 0) {
+                            targetDropdown.append('<option selected disabled>Select a target</option>');
+                            data.forEach(item => {
+                                targetDropdown.append(`<option value="${item.id}">${item.name}</option>`);
+                            });
+                        } else {
+                            targetDropdown.append('<option disabled>No targets available</option>');
+                        }
+                    },
+                    error: () => {
+                        // Hide the loading indicator and show an error message
+                        $('#loading-indicator').hide();
+                        targetDropdown.append('<option disabled>Error loading targets</option>');
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                getData();
+
+                const targetDropdown = $('#targetDropdown');
+                const contentField = $('#floatingTextarea');
+                const submitButton = $('#phishingForm button[type="submit"]');
+
+                // Initial state
+                contentField.prop('disabled', true);
+                submitButton.prop('disabled', true);
+
+                // Enable content field when target is selected
+                targetDropdown.on('change', function () {
+                    if ($(this).val()) {
+                        contentField.prop('disabled', false);
+                    } else {
+                        contentField.prop('disabled', true);
+                        submitButton.prop('disabled', true);
+                    }
+                });
+
+                // Enable submit button when content is filled
+                contentField.on('input', function () {
+                    if ($(this).val().trim()) {
+                        submitButton.prop('disabled', false);
+                    } else {
+                        submitButton.prop('disabled', true);
+                    }
+                });
+
+                $('#phishingForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    // Show the processing modal
+                    const processingModal = new bootstrap.Modal(document.getElementById('processingModal'));
+                    processingModal.show();
+
+                    // Collect form data
+                    const formData = {
+                        target: targetDropdown.val(),
+                        content: contentField.val()
+                    };
+
+                    // Perform AJAX request
+                    $.ajax({
+                        url: '/api/submit-phishing',
+                        method: 'POST',
+                        data: formData,
+                        success: (response) => {
+                            processingModal.hide();
+                            alert('Submission successful!');
+                        },
+                        error: () => {
+                            processingModal.hide();
+                            alert('An error occurred while processing your request.');
+                        }
+                    });
+                });
+            });
+
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<% if (title=='Company' ) { %>
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add New <%= title %>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addGroupForm">
+                        <div class="mb-3">
+                            <label for="groupName" class="form-label">
+                                <%= title %> Name
+                            </label>
+                            <input type="text" class="form-control" id="groupName" name="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="groupDescription" class="form-label">Other Info</label>
+                            <textarea class="form-control" id="groupDescription" name="other_info" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add <%= title %></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Group</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editGroupForm">
+                        <input type="hidden" id="editGroupId" name="id">
+                        <div class="mb-3">
+                            <label for="editGroupName" class="form-label">Group Name</label>
+                            <input type="text" class="form-control" id="editGroupName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editGroupDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editGroupDescription" name="description" rows="3"
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } else if(title=='Victim' ) { %>
+        <div class="modal fade" id="addModalVictim" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Add New <%= title %>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addVictimForm">
+                            <div class="mb-3">
+                                <label for="victimName" class="form-label">
+                                    <%= title %> Name
+                                </label>
+                                <input type="text" class="form-control" id="victimName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="victimEmail" class="form-label">
+                                    <%= title %> Email
+                                </label>
+                                <input type="text" class="form-control" id="victimEmail" name="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="victimOtherInfo" class="form-label">Other Info</label>
+                                <textarea class="form-control" id="victimOtherInfo" name="other_info"
+                                    rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add <%= title %></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Group</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editGroupForm">
+                            <input type="hidden" id="editGroupId" name="id">
+                            <div class="mb-3">
+                                <label for="editGroupName" class="form-label">Group Name</label>
+                                <input type="text" class="form-control" id="editGroupName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editGroupDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="editGroupDescription" name="description" rows="3"
+                                    required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>

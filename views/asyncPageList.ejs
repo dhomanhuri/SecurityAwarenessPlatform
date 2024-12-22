@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            background-color: #1c1c1c;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .sidebar .nav-link {
+            color: #ccc;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #007bff;
+        }
+
+        .content-area {
+            padding-left: 1.5rem;
+        }
+
+        .content-area .post-card {
+            background-color: #1c1c1c;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+        <div class="container mt-5">
+            <div class="row">
+                <!-- Sidebar -->
+                <%- include('partials/sidebar')%>
+
+                    <!-- Main Content -->
+                    <div class="col-md-9 content-area">
+                        <!-- Contoh postingan -->
+                        <div class="post-card">
+                            <h4>
+                                <%= title %>
+                            </h4>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>.</h5>
+
+                                <% if (title=='Company' ) { %>
+                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#addModal">Add
+                                        <%= title %>
+                                    </button>
+
+                                    <% } else if(title=='Victim' ) { %>
+                                        <button class="btn btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#addModalVictim">Add
+                                            <%= title %>
+                                        </button>
+                                        <% } %>
+                            </div>
+
+                            <div class="data_display">
+                                <div class="loading-spinner text-center" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+            </div>
+        </div>
+
+        <%- include('partials/modal')%>
+
+            <script async src="https://www.tiktok.com/embed.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                function fetchDataGroup() {
+
+                    $(".loading-spinner").show(); // Tampilkan animasi loading
+                    $(".data_display table").remove(); // Hapus tabel lama (jika ada)
+                    $.ajax({
+                        url: `/api/group`,
+                        method: 'GET',
+                        success: function (data) {
+                            console.log(data)
+
+                            // Generate table HTML
+                            let table = `
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Group Name</th>
+                            <th>Other Info</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                            // Loop through the data and populate rows
+                            data.data.forEach((item, index) => {
+                                table += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item?.other_info}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}" data-name="${item.name}" data-description="${item?.description}">Edit</button>
+                            <button class="btn btn-sm btn-danger btn-delete" data-id="${item.id}">Delete</button>
+                            <a class="btn btn-sm btn-success" href="/target/${item.id}">data</a>
+                        </td>
+                    </tr>
+                `;
+                            });
+
+                            table += `
+                    </tbody>
+                </table>
+            `;
+
+                            // Append the table to .data_display
+                            $(".data_display").html(table);
+                        },
+                        error: function (error) {
+                            console.error("Error fetching data:", error);
+                            $(".data_display").html("<p class='text-danger'>Failed to load data.</p>");
+                        }
+                    })
+                }
+                function fetchDataGroupData() {
+
+                    $(".loading-spinner").show(); // Tampilkan animasi loading
+                    $(".data_display table").remove(); // Hapus tabel lama (jika ada)
+                    $.ajax({
+                        url: `/api/group_data`,
+                        method: 'GET',
+                        success: function (data) {
+                            console.log(data)
+
+                            // Generate table HTML
+                            let table = `
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Other Info</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                            // Loop through the data and populate rows
+                            data.data.forEach((item, index) => {
+                                table += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.email}</td>
+                        <td>${item?.other_info}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}" data-name="${item.name}" data-other_info="${item?.other_info}">Edit</button>
+                            <button class="btn btn-sm btn-danger btn-delete" data-id="${item.id}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                            });
+
+                            table += `
+                    </tbody>
+                </table>
+            `;
+
+                            // Append the table to .data_display
+                            $(".data_display").html(table);
+                        },
+                        error: function (error) {
+                            console.error("Error fetching data:", error);
+                            $(".data_display").html("<p class='text-danger'>Failed to load data.</p>");
+                        }
+                    })
+                }
+                $(document).ready(function () {
+                    if ("<%= title %>" == "Company") {
+                        fetchDataGroup()
+                        $("#addGroupForm").submit(function (e) {
+                            e.preventDefault();
+                            const formData = {
+                                name: $("#groupName").val()
+                            };
+                            $.ajax({
+                                url: `/api/group`,
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(formData),
+                                success: function (response) {
+                                    $("#addModal").modal('hide'); // Hide modal
+                                    fetchDataGroup(); // Refresh table
+                                    alert("Group added successfully!");
+                                },
+                                error: function (error) {
+                                    console.error("Error adding group:", error);
+                                    alert("Failed to add group.");
+                                }
+                            });
+                        });
+                        // Open Edit Modal
+                        $(document).on('click', '.btn-edit', function () {
+                            const id = $(this).data('id');
+                            const name = $(this).data('name');
+                            const description = $(this).data('description');
+
+                            // Populate modal fields
+                            $('#editGroupId').val(id);
+                            $('#editGroupName').val(name);
+                            $('#editGroupDescription').val(description);
+
+                            // Show the modal
+                            $('#editModal').modal('show');
+                        });
+
+                        // Save Changes
+                        $('#editGroupForm').submit(function (e) {
+                            e.preventDefault();
+
+                            const id = $('#editGroupId').val();
+                            const formData = {
+                                name: $('#editGroupName').val(),
+                                description: $('#editGroupDescription').val(),
+                            };
+
+                            $.ajax({
+                                url: `/api/group/${id}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(formData),
+                                success: function (response) {
+                                    $('#editModal').modal('hide'); // Hide modal
+                                    fetchDataGroup(); // Refresh table
+                                    alert("Group updated successfully!");
+                                },
+                                error: function (error) {
+                                    console.error("Error updating group:", error);
+                                    alert("Failed to update group.");
+                                }
+                            });
+                        });
+                        $(document).on('click', '.btn-delete', function () {
+                            const id = $(this).data('id');
+
+                            if (confirm("Are you sure you want to delete this group?")) {
+                                $.ajax({
+                                    url: `/api/group/${id}`,
+                                    method: 'DELETE',
+                                    success: function () {
+                                        fetchDataGroup(); // Refresh table
+                                        alert("Group deleted successfully!");
+                                    },
+                                    error: function (error) {
+                                        console.error("Error deleting group:", error);
+                                        alert("Failed to delete group.");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else if ("<%= title %>" == "Victim") {
+                        fetchDataGroupData()
+                        $("#addVictimForm").submit(function (e) {
+                            e.preventDefault();
+                            const formData = {
+                                name: $("#victimName").val(),
+                                email: $("#victimEmail").val(),
+                                other_info: $("#victimOtherInfo").val(),
+                                group_id: "<%= data?.company_id %>",
+                            };
+                            $.ajax({
+                                url: `/api/group_data`,
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(formData),
+                                success: function (response) {
+                                    $("#addModalVictim").modal('hide'); // Hide modal
+                                    fetchDataGroupData(); // Refresh table
+                                },
+                                error: function (error) {
+                                    console.error("Error adding group:", error);
+                                    alert("Failed to add group.");
+                                }
+                            });
+                        });
+                        // Open Edit Modal
+                        $(document).on('click', '.btn-edit', function () {
+                            const id = $(this).data('id');
+                            const name = $(this).data('name');
+                            const description = $(this).data('description');
+
+                            // Populate modal fields
+                            $('#editGroupId').val(id);
+                            $('#editGroupName').val(name);
+                            $('#editGroupDescription').val(description);
+
+                            // Show the modal
+                            $('#editModal').modal('show');
+                        });
+
+                        // Save Changes
+                        $('#editGroupForm').submit(function (e) {
+                            e.preventDefault();
+
+                            const id = $('#editGroupId').val();
+                            const formData = {
+                                name: $('#editGroupName').val(),
+                                description: $('#editGroupDescription').val(),
+                            };
+
+                            $.ajax({
+                                url: `/api/group_data/${id}`,
+                                method: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify(formData),
+                                success: function (response) {
+                                    $('#editModal').modal('hide'); // Hide modal
+                                    fetchDataGroup(); // Refresh table
+                                    alert("Group updated successfully!");
+                                },
+                                error: function (error) {
+                                    console.error("Error updating group:", error);
+                                    alert("Failed to update group.");
+                                }
+                            });
+                        });
+                        $(document).on('click', '.btn-delete', function () {
+                            const id = $(this).data('id');
+
+                            if (confirm("Are you sure you want to delete this group data?")) {
+                                $.ajax({
+                                    url: `/api/group_data/${id}`,
+                                    method: 'DELETE',
+                                    success: function () {
+                                        fetchDataGroup(); // Refresh table
+                                        alert("Group deleted successfully!");
+                                    },
+                                    error: function (error) {
+                                        console.error("Error deleting group:", error);
+                                        alert("Failed to delete group.");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                })
+            </script>
+</body>
+
+</html>
